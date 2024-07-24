@@ -1,0 +1,19 @@
+{
+  "name": "permagen",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "clipboardy": "^4.0.0",
+    "firebase": "^10.12.4",
+    "picocolors": "^1.0.1"
+  }
+}
