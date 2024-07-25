@@ -93,7 +93,7 @@ async function main() {
     try {
         const args = process.argv.slice(2);
         if (args.length === 0) {
-            p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! Permagen generates permalinks for files by storing them in your configured Firebase Storage bucket\n  •To instantly generate a permalink, use this command: npx permagen [local path to file]\n  •If you need to update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
+            p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! Permagen generates permalinks for files by storing them in your configured Firebase Storage bucket\n  •To instantly generate a permalink, use this command: npx permagen [local path to file]\n  •To update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
             const config = await getFirebaseConfig();
             const app = initializeApp(config);
             const storage = getStorage(app);
