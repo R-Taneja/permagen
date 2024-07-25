@@ -48,7 +48,7 @@ async function getFirebaseConfig(runWithConfigFlag = false) {
     try {
         config = JSON.parse(configJSON);
     } catch (error) {
-        p.outro('Invalid JSON format. Please try again.');
+        p.outro('Invalid format. Please try again.');
         process.exit(1);
     }
 
