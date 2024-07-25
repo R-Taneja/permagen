@@ -89,6 +89,23 @@ async function uploadFile(filePath, storage) {
     }
 }
 
+function formatFilePath(inputPath) {
+    inputPath = inputPath.trim();
+            
+    if ((inputPath.startsWith('"') && inputPath.endsWith('"')) || 
+        (inputPath.startsWith("'") && inputPath.endsWith("'"))) {
+        inputPath = inputPath.slice(1, -1).trim();
+    }
+    
+    inputPath = inputPath.replace(/\\ /g, ' ');
+    
+    const absoluteFilePath = path.isAbsolute(inputPath) 
+        ? inputPath 
+        : path.resolve(process.cwd(), inputPath);
+    
+    return Buffer.from(path.normalize(absoluteFilePath)).toString();
+}
+
 async function main() {
     try {
         const args = process.argv.slice(2);
@@ -103,27 +120,14 @@ async function main() {
                 process.exit(0);
             }
 
-            let inputPath = filePath.trim();
+            const formattedFilePath = formatFilePath(filePath);
             
-            if ((inputPath.startsWith('"') && inputPath.endsWith('"')) || 
-                (inputPath.startsWith("'") && inputPath.endsWith("'"))) {
-                inputPath = inputPath.slice(1, -1).trim();
-            }
-            
-            inputPath = inputPath.replace(/\\ /g, ' ');
-            
-            const absoluteFilePath = path.isAbsolute(inputPath) 
-                ? inputPath 
-                : path.resolve(process.cwd(), inputPath);
-            
-            const normalizedPath = Buffer.from(path.normalize(absoluteFilePath)).toString();
-            
-            if (!fs.existsSync(normalizedPath)) {
+            if (!fs.existsSync(formattedFilePath)) {
                 p.outro('Invalid file path.');
                 process.exit(1);
             }
 
-            const downloadURL = await uploadFile(absoluteFilePath, storage);
+            const downloadURL = await uploadFile(formattedFilePath, storage);
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
@@ -142,14 +146,12 @@ async function main() {
             fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
 
             p.outro('Settings updated successfully!');
-        } else if (fs.existsSync(args[0])) {
+        } else if (fs.existsSync(formatFilePath(args[0]))) {
             const config = await getFirebaseConfig();
             const app = initializeApp(config);
             const storage = getStorage(app);
-            const absoluteFilePath = path.isAbsolute(args[0]) 
-                ? args[0] 
-                : path.resolve(process.cwd(), args[0]);
-            const downloadURL = await uploadFile(absoluteFilePath, storage);
+            const formattedFilePath = formatFilePath(args[0]);
+            const downloadURL = await uploadFile(formattedFilePath, storage);
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
@@ -157,12 +159,13 @@ async function main() {
             } else {
                 p.outro(`${color.bgMagenta(color.black('Your file is hosted at:'))} ${downloadURL}`);
             }
-        } else if (!fs.existsSync(args[0])) {
+        } else if (!fs.existsSync(formatFilePath(args[0]))) {
             p.outro('Invalid file path.');
         } else {
             p.outro('Invalid command. Please run the command without any arguments for the interactive setup or provide a valid file path.');
         }
     } catch (error) {
+        console.error(error);
         process.exit(0);
     }
 }
