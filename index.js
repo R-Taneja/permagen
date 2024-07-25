@@ -73,7 +73,7 @@ async function uploadFile(filePath, storage) {
         spinner.stop('File uploaded successfully!');
         return downloadURL;
     } catch (error) {
-        spinner.stop('Failed to upload file.');
+        spinner.stop('Failed to upload file. Please ensure your Firebase Storage bucket is correctly configured by running npx permagen --config.');
         console.error(error);
         process.exit(1);
     }
