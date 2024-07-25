@@ -26,7 +26,7 @@ async function getFirebaseConfig(runWithConfigFlag = false) {
             const shouldEditConfig = await p.confirm({ message: 'Existing Firebase configuration found. Do you want to edit them?' });
             if (!shouldEditConfig) {
                 p.outro('Using existing Firebase configuration.');
-                return;
+                return configFileJSON;
             }
         }
     }
@@ -54,8 +54,8 @@ async function getFirebaseConfig(runWithConfigFlag = false) {
         process.exit(1);
     }
 
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
-    return config;
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify({ ...config, autoCopy: false }, null, 2));
+    return { ...config, autoCopy: false };
 }
 
 
@@ -91,14 +91,22 @@ async function main() {
         
         const filePath = await p.text({ message: 'Enter the local path to your file:' });
         const downloadURL = await uploadFile(filePath, storage);
-        if (args.includes('-c')) {
+        if (args.includes('-c') || config.autoCopy) {
             clipboardy.writeSync(downloadURL);
             p.outro(`${color.bgBlue(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
         } else {
             p.outro(`${color.bgBlue(color.black('Your file is hosted at:'))} ${downloadURL}`);
         }
     } else if (args.includes('--config')) {
-        await getFirebaseConfig(true);
+        const config = await getFirebaseConfig(true);
+
+        const shouldAutoCopy = await p.confirm({ 
+            message: 'Do you want to always automatically copy permalinks to the clipboard? (This can be changed later)'
+        });
+
+        config.autoCopy = shouldAutoCopy;
+        fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+
         p.outro('Firebase configuration updated successfully!');
     } else if (fs.existsSync(args[0])) {
         const config = await getFirebaseConfig();
@@ -106,7 +114,7 @@ async function main() {
         const storage = getStorage(app);
         const downloadURL = await uploadFile(args[0], storage);
 
-        if (args.includes('-c')) {
+        if (args.includes('-c') || config.autoCopy) {
             clipboardy.writeSync(downloadURL);
             p.outro(`${color.bgBlue(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
         } else {
