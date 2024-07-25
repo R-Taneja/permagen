@@ -105,12 +105,15 @@ async function main() {
             }
 
             const filePathFormatted = filePath.replace(/^['"]|['"]$/g, '');
-            if (!fs.existsSync(filePathFormatted)) {
+            const absoluteFilePath = path.isAbsolute(filePathFormatted) 
+                ? filePathFormatted 
+                : path.resolve(process.cwd(), filePathFormatted);
+            if (!fs.existsSync(absoluteFilePath)) {
                 p.outro('Invalid file path.');
                 process.exit(1);
             }
 
-            const downloadURL = await uploadFile(filePath, storage);
+            const downloadURL = await uploadFile(absoluteFilePath, storage);
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
@@ -130,11 +133,13 @@ async function main() {
 
             p.outro('Settings updated successfully!');
         } else if (fs.existsSync(args[0])) {
-            console.log(args[0]);
             const config = await getFirebaseConfig();
             const app = initializeApp(config);
             const storage = getStorage(app);
-            const downloadURL = await uploadFile(args[0], storage);
+            const absoluteFilePath = path.isAbsolute(args[0]) 
+                ? args[0] 
+                : path.resolve(process.cwd(), args[0]);
+            const downloadURL = await uploadFile(absoluteFilePath, storage);
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
@@ -143,7 +148,6 @@ async function main() {
                 p.outro(`${color.bgMagenta(color.black('Your file is hosted at:'))} ${downloadURL}`);
             }
         } else if (!fs.existsSync(args[0])) {
-            console.log(args[0]);
             p.outro('Invalid file path.');
         } else {
             p.outro('Invalid command. Please run the command without any arguments for the interactive setup or provide a valid file path.');
