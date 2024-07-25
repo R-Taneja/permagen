@@ -23,20 +23,18 @@ async function getFirebaseConfig(runWithConfigFlag = false) {
 
     if (runWithConfigFlag) {
         if (configExistsAndIsValid) {
-            const shouldEditConfig = await p.confirm({ message: 'Existing Firebase configuration found. Do you want to edit them?' });
+            const shouldEditConfig = await p.confirm({ message: 'Existing Firebase configuration found. Do you want to edit it?' });
             if (!shouldEditConfig) {
                 p.outro('Using existing Firebase configuration.');
                 return configFileJSON;
             }
         }
-    }
-
-    if (configExistsAndIsValid) {
+    } else if (configExistsAndIsValid) {
         return JSON.parse(configFileRead);
     }
 
     p.intro('\n---------------------Firebase Configuration---------------------');
-    const readyToProceed = await p.confirm({ message: 'Recommended setup:\n  1. Create a new Firebase project\n  2. Enable Storage in production mode\n  3. Change the security rule to "allow read, write: if true;"\n  4. Get your credentials by going through the web app registration process (copy the "firebaseConfig" object).\n\nAll credentials will be stored locally on your computer at ~/.permagenConfig.json.\n\nAre you ready to enter your Firebase configuration details?' });
+    const readyToProceed = await p.confirm({ message: 'Recommended setup:\n  1. Create a new Firebase project\n  2. Enable Storage in production mode\n  3. Change the security rule to "allow read, write: if true;"\n  4. Get your credentials by going through the web app registration process and copying the "firebaseConfig" object\n\nCredentials will only be stored locally on your computer at ~/.permagenConfig.json.\n\nAre you ready to enter your Firebase configuration details?' });
     if (!readyToProceed) process.exit(0);
 
     const configString = await p.text({ message: 'Paste your Firebase configuration object here:' });
