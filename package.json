@@ -7,6 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": "https://github.com/R-Taneja/permagen",
+  "homepage": "https://github.com/R-Taneja/permagen",
+  "bin": "./index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
