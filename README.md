@@ -1,7 +1,7 @@
 # permagen
 CLI that automatically generates a permalink for any file. Useful for quickly creating free permalinks for images, PDFs, etc.
 
-It works by storing the file in your Firebase Storage bucket using your Firebase project credentials. Credentials never leave your computer and are stored locally at ~/.permagenConfig.json. See recommended Firebase setup section below.
+It works by storing the file in your Firebase Storage bucket using your Firebase project credentials. Credentials never leave your computer and are stored locally at `~/.permagenConfig.json`. See recommended Firebase setup section below.
 
 ### Usage
 - `npx permagen` - home menu
