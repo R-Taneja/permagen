@@ -93,22 +93,37 @@ async function main() {
     try {
         const args = process.argv.slice(2);
         if (args.length === 0) {
-            p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! Permagen generates permalinks for files by storing them in your configured Firebase Storage bucket\n  •To instantly generate a permalink, use this command: npx permagen [path to file]\n  •To update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
+            p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! Permagen generates permalinks for files by storing them in your configured Firebase Storage bucket\n  • To instantly generate a permalink, use this command: npx permagen [path to file]\n  • To update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
             const config = await getFirebaseConfig();
             const app = initializeApp(config);
             const storage = getStorage(app);
             
             const filePath = await p.text({ message: 'Enter the path to your file:' });
             if (!filePath) {
-                p.outro('Firebase configured successfully.');
                 process.exit(0);
             }
 
-            const filePathFormatted = filePath.replace(/^['"]|['"]$/g, '');
-            const absoluteFilePath = path.isAbsolute(filePathFormatted) 
-                ? filePathFormatted 
-                : path.resolve(process.cwd(), filePathFormatted);
-            if (!fs.existsSync(absoluteFilePath)) {
+            let inputPath = filePath.trim();
+            
+            if ((inputPath.startsWith('"') && inputPath.endsWith('"')) || 
+                (inputPath.startsWith("'") && inputPath.endsWith("'"))) {
+                inputPath = inputPath.slice(1, -1).trim();
+            }
+            
+            inputPath = inputPath.replace(/\\ /g, ' ');
+            
+            const absoluteFilePath = path.isAbsolute(inputPath) 
+                ? inputPath 
+                : path.resolve(process.cwd(), inputPath);
+            
+            const normalizedPath = Buffer.from(path.normalize(absoluteFilePath)).toString();
+            
+            console.log('Input path:', inputPath);
+            console.log('Absolute file path:', absoluteFilePath);
+            console.log('Normalized path:', normalizedPath);
+            console.log('File exists:', fs.existsSync(normalizedPath));
+            
+            if (!fs.existsSync(normalizedPath)) {
                 p.outro('Invalid file path.');
                 process.exit(1);
             }
