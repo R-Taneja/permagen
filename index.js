@@ -12,14 +12,24 @@ import clipboardy from 'clipboardy';
 const CONFIG_PATH = path.join(os.homedir(), '.permagenConfig.json');
 
 async function getFirebaseConfig(runWithConfigFlag = false) {
-    const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-    const configFileExists = fs.existsSync(CONFIG_PATH);
-    const configFileRead = configFileExists ? fs.readFileSync(CONFIG_PATH, 'utf-8') : null;
-    const configFileJSON = configFileRead ? JSON.parse(configFileRead) : null;
-    const configExistsAndIsValid = configFileRead && requiredKeys.every(key => {
-        const value = configFileJSON[key];
-        return value && value.trim();
-    });
+    let configExistsAndIsValid = false;
+    let configFileRead;
+
+    try {
+        const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+        const configFileExists = fs.existsSync(CONFIG_PATH);
+        configFileRead = configFileExists ? fs.readFileSync(CONFIG_PATH, 'utf-8') : null;
+        const configFileJSON = configFileRead ? JSON.parse(configFileRead) : null;
+        configExistsAndIsValid = configFileRead && requiredKeys.every(key => {
+            const value = configFileJSON[key];
+            return value && value.trim();
+        });
+    } catch (error) {
+        if (!runWithConfigFlag) {
+            p.outro('Invalid Firebase configuration. Please run npx permagen --config.');
+            process.exit(1);
+        }
+    }
 
     if (runWithConfigFlag) {
         if (configExistsAndIsValid) {
@@ -82,12 +92,17 @@ async function uploadFile(filePath, storage) {
 async function main() {
     const args = process.argv.slice(2);
     if (args.length === 0) {
-        p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! This CLI tool generates permalinks for files by storing them in your configured Firebase Storage bucket\n  •To instantly generate a permalink, use this command: npx permagen [local path to file]\n  •If you need to update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
+        p.intro(`\n${color.bgMagenta(color.black('-------------------------------------------'))}\n\nWelcome! Permagen generates permalinks for files by storing them in your configured Firebase Storage bucket\n  •To instantly generate a permalink, use this command: npx permagen [local path to file]\n  •If you need to update your Firebase credentials, use the --config flag\n  •To automatically copy permalinks to your clipboard, use the -c flag\n\n${color.bgMagenta(color.black('-------------------------------------------'))}`);
         const config = await getFirebaseConfig();
         const app = initializeApp(config);
         const storage = getStorage(app);
         
         const filePath = await p.text({ message: 'Enter the local path to your file:' });
+        if (!filePath) {
+            p.outro('Firebase configured successfully.');
+            process.exit(0);
+        }
+
         const filePathFormatted = filePath.replace(/^['"]|['"]$/g, '');
         if (!fs.existsSync(filePathFormatted)) {
             p.outro('Invalid file path.');
