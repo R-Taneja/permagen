@@ -88,7 +88,14 @@ async function main() {
         const storage = getStorage(app);
         
         const filePath = await p.text({ message: 'Enter the local path to your file:' });
+        const filePathFormatted = filePath.replace(/^['"]|['"]$/g, '');
+        if (!fs.existsSync(filePathFormatted)) {
+            p.outro('Invalid file path.');
+            process.exit(1);
+        }
+
         const downloadURL = await uploadFile(filePath, storage);
+
         if (args.includes('-c') || config.autoCopy) {
             clipboardy.writeSync(downloadURL);
             p.outro(`${color.bgBlue(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
@@ -105,8 +112,9 @@ async function main() {
         config.autoCopy = shouldAutoCopy;
         fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
 
-        p.outro('Firebase configuration updated successfully!');
+        p.outro('Settings updated successfully!');
     } else if (fs.existsSync(args[0])) {
+        console.log(args[0]);
         const config = await getFirebaseConfig();
         const app = initializeApp(config);
         const storage = getStorage(app);
@@ -119,6 +127,7 @@ async function main() {
             p.outro(`${color.bgBlue(color.black('Your file is hosted at:'))} ${downloadURL}`);
         }
     } else if (!fs.existsSync(args[0])) {
+        console.log(args[0]);
         p.outro('Invalid file path.');
     } else {
         p.outro('Invalid command. Please run the command without any arguments for the interactive setup or provide a valid file path.');
