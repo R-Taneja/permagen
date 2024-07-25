@@ -118,11 +118,6 @@ async function main() {
             
             const normalizedPath = Buffer.from(path.normalize(absoluteFilePath)).toString();
             
-            console.log('Input path:', inputPath);
-            console.log('Absolute file path:', absoluteFilePath);
-            console.log('Normalized path:', normalizedPath);
-            console.log('File exists:', fs.existsSync(normalizedPath));
-            
             if (!fs.existsSync(normalizedPath)) {
                 p.outro('Invalid file path.');
                 process.exit(1);
