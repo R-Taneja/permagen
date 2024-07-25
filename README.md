@@ -1,2 +1,2 @@
 # permagen
-CLI to automatically generates permalinks for any file by hosting them on the user's Firebase Storage bucket.
+CLI that automatically generates a permalink for any file by storing it in the user's Firebase Storage bucket.
