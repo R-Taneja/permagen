@@ -114,9 +114,9 @@ async function main() {
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
-                p.outro(`${color.bgBlue(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
+                p.outro(`${color.bgMagenta(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
             } else {
-                p.outro(`${color.bgBlue(color.black('Your file is hosted at:'))} ${downloadURL}`);
+                p.outro(`${color.bgMagenta(color.black('Your file is hosted at:'))} ${downloadURL}`);
             }
         } else if (args.includes('--config')) {
             const config = await getFirebaseConfig(true);
@@ -138,9 +138,9 @@ async function main() {
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
-                p.outro(`${color.bgBlue(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
+                p.outro(`${color.bgMagenta(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
             } else {
-                p.outro(`${color.bgBlue(color.black('Your file is hosted at:'))} ${downloadURL}`);
+                p.outro(`${color.bgMagenta(color.black('Your file is hosted at:'))} ${downloadURL}`);
             }
         } else if (!fs.existsSync(args[0])) {
             console.log(args[0]);
