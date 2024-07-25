@@ -1,7 +1,7 @@
 {
   "name": "permagen",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,16 @@
   "repository": "https://github.com/R-Taneja/permagen",
   "homepage": "https://github.com/R-Taneja/permagen",
   "bin": "./index.js",
-  "keywords": [],
+  "keywords": [
+    "firebase",
+    "cli",
+    "permalink",
+    "url",
+    "storage",
+    "image",
+    "file",
+    "upload"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
