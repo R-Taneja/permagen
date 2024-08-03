@@ -47,7 +47,18 @@ async function getFirebaseConfig(runWithConfigFlag = false) {
     const readyToProceed = await p.confirm({ message: 'Recommended setup:\n  1. Create a new Firebase project\n  2. Enable Storage in production mode\n  3. Change the security rule to "allow read, write: if true;"\n  4. Get your credentials by going through the web app registration process and copying the "firebaseConfig" object (also in Project Settings > Web apps > npm)\n\nCredentials will only be stored locally on your computer at ~/.permagenConfig.json.\n\nAre you ready to enter your Firebase configuration details?' });
     if (!readyToProceed) process.exit(0);
 
-    const configString = await p.text({ message: 'Paste your Firebase configuration object here:' });
+    const configString = await p.text({
+        message: 'Paste your Firebase configuration object here:',
+        validate: (value) => {
+            if (!value) return 'Please enter a configuration.';
+            if (!value.includes('}') || !value.includes('{')) {
+                return 'Invalid or incomplete configuration. Make sure to include the entire config object including the curly braces.';
+            }
+            return;
+        },
+        multiline: true
+    });
+
     const configJSON = configString
         .replace(/const firebaseConfig =/, '')
         .replace(/;$/, '')
@@ -115,10 +126,7 @@ async function main() {
             const app = initializeApp(config);
             const storage = getStorage(app);
             
-            const filePath = await p.text({ message: 'Enter the path to your file:' });
-            if (!filePath) {
-                process.exit(0);
-            }
+            const filePath = await p.text({ message: 'Enter the path to your file:' }, { validate: (value) => { if (!value) return 'Please enter a configuration.' } });
 
             const formattedFilePath = formatFilePath(filePath);
             
