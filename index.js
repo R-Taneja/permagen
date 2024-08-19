@@ -139,7 +139,7 @@ async function main() {
 
             if (args.includes('-c') || config.autoCopy) {
                 clipboardy.writeSync(downloadURL);
-                p.outro(`${color.bgMagenta(color.black('Your file is copied to the clipboard and hosted at:'))} ${downloadURL}`);
+                p.outro(`${color.bgMagenta(color.black('Your file is hosted at (copied to clipboard):'))} ${downloadURL}`);
             } else {
                 p.outro(`${color.bgMagenta(color.black('Your file is hosted at:'))} ${downloadURL}`);
             }
